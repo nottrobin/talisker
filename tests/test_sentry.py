@@ -176,6 +176,7 @@ def test_middleware_soft_request_timeout(
     body, _, _ = conftest.run_wsgi(mw, environ)
     list(body)
     assert 'Start_response over timeout: 0' == sentry_messages[0]['message']
+    assert 'warning' == sentry_messages[0]['level']
 
 
 def test_middleware_soft_request_timeout_non_zero(
@@ -246,3 +247,8 @@ def test_logs_ignored():
     crumb = data['breadcrumbs']['values'][0]
     assert crumb['message'] == 'talisker'
     assert crumb['category'] == 'talisker'
+
+
+def test_sentry_client_returns_capture(sentry_client):
+    result = sentry_client.capture('Message', message='test')
+    assert result is not None

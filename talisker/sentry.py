@@ -159,7 +159,7 @@ class TaliskerSentryClient(raven.Client):
 
     def capture(self, event_type, tags=None, extra=None, **kwargs):
         tags, extra = add_talisker_context(tags, extra)
-        super().capture(event_type, tags=tags, extra=extra, **kwargs)
+        return super().capture(event_type, tags=tags, extra=extra, **kwargs)
 
 
 class TaliskerSentryMiddleware(raven.middleware.Sentry):
@@ -177,7 +177,8 @@ class TaliskerSentryMiddleware(raven.middleware.Sentry):
                         duration > soft_start_timeout):
                     self.client.captureMessage(
                         'Start_response over timeout: {}'
-                        .format(soft_start_timeout)
+                        .format(soft_start_timeout),
+                        level='warning'
                     )
                 return response
             return super().__call__(environ, soft_timeout_start_response)
